@@ -203,7 +203,14 @@
 			{
 				"name": "Update Failed Status",
 				"type": "Script",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Bronze to Silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 2,
@@ -221,7 +228,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "update ctrl.audit_log\nset ststus= 'FAILED' ,end_time=SYSUTCDATETIME()\nwhere adf_run_id='@{pipeline().parameters.adf_run_id}' and table_id =@{item().table_id}",
+								"value": "update ctrl.audit_log\nset status= 'SUCCESS' ,end_time=SYSUTCDATETIME(),records_written=50\nwhere adf_run_id='@{pipeline().parameters.adf_run_id}' and table_id =@{pipeline().parameters.TABLE_ID}",
 								"type": "Expression"
 							}
 						}
@@ -234,6 +241,9 @@
 			"TABLE_ID": {
 				"type": "string",
 				"defaultValue": "1"
+			},
+			"adf_run_id": {
+				"type": "string"
 			}
 		},
 		"variables": {
